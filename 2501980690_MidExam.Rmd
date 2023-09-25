@@ -1,0 +1,687 @@
+---
+title: '[2501980690]_MidExam'
+author: "Agnes Calista"
+date: '2022-04-02'
+output: html_document
+---
+
+**Video Link: '(https://binusianorg-my.sharepoint.com/personal/agnes_calista_binus_ac_id/_layouts/15/guestaccess.aspx?guestaccesstoken=5zQJ9WrlQQ%2bztx%2fY7wnXREGMFCoVri80NoF1%2bDTGwpg%3d&docid=2_0f56ace219bb641329f69c136f757d0aa&rev=1)'**
+
+
+##### **1. Apply the following exploratory data analysis techniques using R on `CarPrice` dataset: (25 pts.)**
+
+a.	Using `mfrow` parameter, construct a two-by-two plot array showing the concentrations of the following four attributes versus the record number in the dataset: 
+
+(1) Wheelbase, top left; 
+(2) carwidth, top right; 
+(3) fueltype, lower left; and 
+(4) CylinderNumber, lower right. 
+
+In all cases, the x-axis label should read `Record number in dataset` and the y-axis should read the attribute. Each plot should have a title spelling out the name of the element on which the attribute is based (e.g., “wheelbase” for the top-left plot).
+```{r}
+getwd()
+
+```
+```{r}
+setwd("C:/Users/AGNES CALISTA/Documents/bahasa R/UTS")
+```
+
+
+```{r}
+#write your code here
+dataframe <- read.csv("CarPrice-EvenSID.csv")
+library(MASS)
+library(car)
+
+par(mfrow = c(2,2))
+hist(dataframe$WheelBase, main = "whellBase", font.lab = 4, xlab = "record Number In Dataset")
+
+hist(dataframe$CarWidth, main = "Carwidth",col = "cyan", font.lab = 4, xlab = "record Number In dataframeset")
+
+dataframe$FuelType <- as.factor(dataframe$FuelType)
+plot(factor(dataframe$FuelType), col = "lavender", horiz = TRUE , font.lab = 4, xlab= "Record number in Dataset", main = "fuelType")
+
+dataframe$CylinderNumber <- as.factor(dataframe$CylinderNumber)
+plot(factor(dataframe$CylinderNumber), font.lab = 4, xlab= "Record number in Dataset", col = "beige", main = "CylinderNumber", horiz = TRUE,  xlim =c(0, 180))
+
+```
+
+```
+__Write your explanation here:__
+ 
+1. untuk soal no 1a ini pada gambar kiri atas menunjukan whellbase dan record number in datasetnya. frekuensi tertinggi ada diangka 70 dengan record number berada di angka 95-100 dan untuk frekuensi terendah berada di range 0 keatas.
+
+2. untuk gambar kanan atas kita mencari carwidth dari record number datasetnya. didapat range 60-72 untuk record number datasetnya dan untuk frekuensi ada melebihi angka 40. untuk carwidth record dataset tertinggi ada di angka 63-64. 
+
+3. untuk fueltype frekuensi gas jauh lebih besar dibandingkan disel. hanya sedikit dengan pemakaian disel dibandingkan dengan gas. dengan record number gas sangat besar melebihi 150.
+
+4. untuk cylindernumber didapat recordnumber melebihi 150 dan angka terkecil berada di range 0 
+
+
+
+
+```
+
+ b.	Construct a mosaic plot showing the relationship between the variables `Carbody` and `CylinderNumber` in the `CarPrice` data frame. Does this plot suggest a relationship between these variables? Explain your answer.
+```{r}
+#write your code here
+
+
+mosaicplot(CarBody~CylinderNumber, data = dataframe, las = 1, main = "car price", shade = TRUE)
+           
+          
+```
+
+```
+__Write your explanation here:__
+
+car body  untuk cylindernumber dari hatchback terbanyak memiliki 4 cylinder number. untuk 4 cylinder number Aturan 1-2-4-3. Contoh kendaraannya ada beberapa British Ford and Riley engines, Ford Kent engine, Riley Nine.
+
+hardrop car body memiliki 6 cylindernumber.
+
+sisanya semua memiliki cylinder dengan ciri-ciri berkotak. jika hanya garis berarti tidak memiliki cylinder number.
+
+
+```
+
+c.	Compute the correlation for all attributes. Interpret the statistical findings!
+```{r}
+#write your code here
+
+library (psych)
+library(corrplot)
+var = cor(dataframe[, unlist(lapply(dataframe, is.numeric))])
+
+
+
+corPlot(var, gr = colorRampPalette(heat.colors(40)))
+
+
+```
+
+
+
+```
+__Write your explanation here:__
+
+wheelbase memiliki hubungan yang positif relatif tinggi dengan variabel carwidth, curbweight dan juga price. yaitu pada angka 0,8  0,78  dan juga 0,58
+
+selanjutnya, hubungan negatif yang tidak begitu besar ada pada symboling dan citymph yaitu di -0,04
+
+carwidth memiliki hubungan yang positif relatif tinggi dengan variabel wheelbase, curbweightm horsepower dan price. lalu hubungan paling rendahnya dengan citymph dengan angka -0,64 dan hubungan rendah pada symboling pada angka -0,23
+
+selanjutnya, ada curbweight memiliki hubungan yang positif relatif tinggi dengan variabel wheelbase, carwidth, horsepower dan price.
+hubungan paling negatif rendah ada pada wheelbase dan rendah biasa ada di symboling.
+
+selanjutnya, hubungan yang positif relatif tinggi oleh horsepower ada di carwidth, curbweight, dan price. sedangkan yang negatif ada pada citympg dan symboling.
+
+citympg juga memiliki hubungan yang tinggi kuat pada variabel curbweight , horsepower dan price.
+
+terakhir ada price memiliki hubungan yang positif relatif tinggi pada variabel wheelbase, carwidth, curbweight dan horsepower. serta memiliki hubungan yang negatif pada citympg dan juga symboling.
+
+
+
+setelah dilihat dapat disimpulkan bahwa symboling memiliki angka terendah jika dibandingakan dengan yang lainnya.
+
+
+
+
+
+```
+
+##### **2. You need to compare three ways (three-sigma edit rule, Hampel identifier, boxplot rule) of detecting univariate outliers for the `wheelbase` attribute from the data frame: (20 pts.)**
+
+a.	Generate a plot for each technique and give the appropriate features (labels, line type, etc.). Based on these plots, which outlier detector seems to be giving the more reasonable results?
+
+```{r}
+mean <- mean(dataframe$WheelBase)
+mean
+sd<- sd(dataframe$WheelBase)
+
+up <- mean + 3 * sd
+low <- mean - 3 * sd
+out <- list(up=up, down = low)
+out
+
+
+
+plot(dataframe$WheelBase, main = "Three sigma", ylim =c(75, 120))
+
+abline (h = mean, lty=3, lwd =2, col = "red")
+abline(h=up, lty = 3,col = "blue", lwd = 2)
+
+
+#garis standart devision
+abline(h=low, lty = 3, col = "blue", lwd = 2)
+
+```
+
+```{r}
+median <- median(dataframe$WheelBase)
+median
+sd<- mad(dataframe$WheelBase)
+
+up <- median + 3 * sd
+low <- median - 3 * sd
+out <- list(up=up, down = low)
+out
+
+
+
+plot(dataframe$WheelBase, main = "Hampel Identifier", ylim =c(75, 120))
+
+#garis median
+abline (h = median, lty=3, lwd =2, col = "red")
+#garis up 
+abline(h=up, lty = 3,col = "blue", lwd = 2)
+
+
+#garis low
+abline(h=low, lty = 3, col = "blue", lwd = 2)
+```
+```{r}
+out <- boxplot.stats(dataframe$WheelBase)$out
+
+boxplot(dataframe$WheelBase,ylab = "",main = "wheel Base", col = "beige")
+
+mtext(paste("Outliers: ", paste(out, collapse = ", ")))
+```
+```
+__Write your explanation here:__
+
+pada three sigma dapat dilihat di plot bahwa memiliki 3 garis batas atas dari three sigma wheelbase adalah 116.8219 dilihat dari garis atas yang berwarna biru
+sedangkan untuk batas bawah dapat dilihat garis bawah yang berwarna biru bernilai 80.69126.
+dan terakhir untuk mean bernilai mendekati 98.75659.
+
+kemudian untuk Hampel Identifier pada batas atas bernilai 109.0091 dapat dilihat pada garis atas yang berwarna biru. sedangkan untuk low nya bernilai 84.99094 dan terakhir untuk mediannya bernilai 97
+
+terdapat 3 outliers pada variabel wheelbase yaitu 115.6 , 115.6, 120.9
+
+lalu metode yang saya pakai adalah boxplot karena jika dilihat dari ketiga methode diatas, boxplot dan threesigma memiliki selisih yang hampir mirip untuk outliersnya. jika dilihat hampel memiliki outliers terbanyak. tetapi tidak semua outliers itu mengganggu. sebab dari itu boxplot lebih cocok menjadi metode ini jika kita bandingkan dengan yang lain seperti threesigma yang hanya memiliki 1 outliers saja terlalu konservatif. dan jika hampel ada sampai 18 outliers terlalu agresif dalam pendeteksiannya.
+
+
+
+```
+
+b.	How many data points are declared outliers by each of the technique? Based on this data points, which outlier detector seems to be giving the more reasonable results?
+
+```{r}
+#write your code here
+
+ThreeSigma <- function(x, t = 3){
+
+ mu <- mean(x, na.rm = TRUE)
+ sig <- sd(x, na.rm = TRUE)
+ if (sig == 0){
+ message("All non-missing x-values are identical")
+}
+ up <- mu + t * sig
+ down <- mu - t * sig
+ out <- list(up = up, down = down)
+ return(out)
+ }
+
+Hampel <- function(x, t = 3){
+
+ mu <- median(x, na.rm = TRUE)
+ sig <- mad(x, na.rm = TRUE)
+ if (sig == 0){
+ message("Hampel identifer implosion: MAD scale estimate is zero")
+ }
+ up <- mu + t * sig
+ down <- mu - t * sig
+ out <- list(up = up, down = down)
+ return(out)
+ }
+   
+BoxplotRule<- function(x, t = 1.5){
+
+ xL <- quantile(x, na.rm = TRUE, probs = 0.25, names = FALSE)
+ xU <- quantile(x, na.rm = TRUE, probs = 0.75, names = FALSE)
+ Q <- xU - xL
+ if (Q == 0){
+ message("Boxplot rule implosion: interquartile distance is zero")
+ }
+ up <- xU + t * Q
+ down <- xL - t * Q
+ out <- list(up = up, down = down)
+ return(out)
+}   
+
+ExtractDetails <- function(x, down, up){
+
+ outClass <- rep("N", length(x))
+ indexLo <- which(x < down)
+ indexHi <- which(x > up)
+ outClass[indexLo] <- "L"
+ outClass[indexHi] <- "U"
+ index <- union(indexLo, indexHi)
+ values <- x[index]
+ outClass <- outClass[index]
+ nOut <- length(index)
+ maxNom <- max(x[which(x <= up)])
+ minNom <- min(x[which(x >= down)])
+ outList <- list(nOut = nOut, lowLim = down,
+ upLim = up, minNom = minNom,
+ maxNom = maxNom, index = index,
+ values = values,
+ outClass = outClass)
+ return(outList)
+ }
+
+```
+```{r}
+FindOutliers <- function(x, t3 = 3, tH = 3, tb = 1.5){
+ threeLims <- ThreeSigma(x, t = t3)
+ HampLims <- Hampel(x, t = tH)
+ boxLims <- BoxplotRule(x, t = tb)
+
+ n <- length(x)
+ nMiss <- length(which(is.na(x)))
+
+ threeList <- ExtractDetails(x, threeLims$down, threeLims$up)
+ HampList <- ExtractDetails(x, HampLims$down, HampLims$up)
+ boxList <- ExtractDetails(x, boxLims$down, boxLims$up)
+
+ sumFrame <- data.frame(method = "ThreeSigma", n = n,
+ nMiss = nMiss, nOut = threeList$nOut,
+ lowLim = threeList$lowLim,
+ upLim = threeList$upLim,
+ minNom = threeList$minNom,
+ maxNom = threeList$maxNom)
+ upFrame <- data.frame(method = "Hampel", n = n,
+ nMiss = nMiss, nOut = HampList$nOut,
+ lowLim = HampList$lowLim,
+ upLim = HampList$upLim,
+ minNom = HampList$minNom,
+ maxNom = HampList$maxNom)
+ sumFrame <- rbind.data.frame(sumFrame, upFrame)
+ upFrame <- data.frame(method = "BoxplotRule", n = n,
+ nMiss = nMiss, nOut = boxList$nOut,
+ lowLim = boxList$lowLim,
+ upLim = boxList$upLim,
+ minNom = boxList$minNom,
+ maxNom = boxList$maxNom)
+ sumFrame <- rbind.data.frame(sumFrame, upFrame)
+
+ threeFrame <- data.frame(index = threeList$index,
+ values = threeList$values,
+ type = threeList$outClass)
+ HampFrame <- data.frame(index = HampList$index,
+ values = HampList$values,
+ type = HampList$outClass)
+ boxFrame <- data.frame(index = boxList$index,
+ values = boxList$values,
+ type = boxList$outClass)
+ outList <- list(summary = sumFrame, threeSigma = threeFrame,
+ Hampel = HampFrame, boxplotRule = boxFrame)
+ return(outList)
+}
+```
+```{r}
+fullSummary <- FindOutliers(dataframe$WheelBase)
+fullSummary$summary
+
+
+
+```
+
+```
+__Write your explanation here:__
+
+1. maximal number three sigma adalah 115,6 sedangkan minimal number three sigma adalah 86.6	
+2. maximal number Hampel adalah 108.0 sedangkan minimal number Hampel adalah 86.6	
+3. maximal number Hampel adalah 108.0 sedangkan minimal number Hampel adalah 86.6	
+4. batas bawah dari three sigma 80.69126	dan batas atasnya 116.8219
+5. batas bawah dari hampelnya 84.99094 dan batas atasnya 109.0091
+6. batas bawah dari boxplot adalah 82.65000	dan batas atasnya 114.2500	
+
+jika dilihat dari ketiga methode diatas, boxplot dan threesigma memiliki selisih yang hampir mirip untuk outliersnya. jika dilihat hampel memiliki outliers terbanyak. tetapi tidak semua outliers itu mengganggu. sebab dari itu boxplot lebih cocok menjadi metode ini jika kita bandingkan dengan yang lain seperti threesigma yang hanya memiliki 1 outliers saja terlalu konservatif. dan jika hampel ada sampai 18 outliers terlalu agresif dalam pendeteksiannya.
+
+```
+
+
+##### **3. Do a comprehensive EDA on your dataset then find the best-fit linear regression model then answer the following questions: (40 pts.)**
+
+_EDA_
+
+
+```{r}
+str(dataframe)
+```
+
+```
+__EXPLANATION__
+ini untuk mengecek struktur datanya. 
+
+terdiri dari 205 observasi dan 14 kolomn.
+FuelType memiliki 2 kategori diesel dan gas
+yang merupkan numerik ato int ada Price,Citympg, HorsePower, CurbWeight, CarWidth, WheelBase, Symboling, CarID 
+sisanya merupakan character atau kategorical
+
+```
+
+```{r}
+dim(dataframe)
+```
+
+```
+_penjelasan singkat:_
+mengecek ada berapa jumlah baris dan kolomn
+205 baris 13 kolomn
+```
+
+
+```{r}
+summary(dataframe)
+```
+
+
+```
+_EXPLANASI_
+
+membuat sebuah ringkasann terhadap data yang telah kita explor. disini ada nilai minimum, median, mean, max dari setiap variabel numerik.
+
+1. seperti harga rata-rata nya yaitu 13277, dengan harga maximal di 45400 dan harga terendah di 5118.
+
+2. untuk horsepower nya tertinggi berada di 288.0 angka ini menurut saya sudah cukup tinggi karena jika dibandingkan dengan mobil menengah kira-kira memiliki 170-190 horsepower saja dan terendah berada di 48.0 angka ini menurut saya terbilang rendah. jika memang segini kecepatan mobil tidak akan berjalan dengan kecepatan mobil menengah.
+Biasanya di Amerika, mobil ukuran menengah dapat memiliki 170-190 horsepower(ini hanya perbandingan saja dengan model kita). rata-rata dari horse power model kita ialah 104.1 untuk rata-rata seigini menurut saya sudah cukup karena berkisaran di angka 100. atau mungkin kita bisa mengambil di quartile ke3 yaitu sebesar 116.0. 
+
+
+3. untuk fueltypenya paling banyak dengan varian tipe berupa gas dibandingkan disel. setelah saya riset lebih dalam, ini dikarenakan mesin disel banyak menghasilkan asap knalpot yang tebal dan suara mesin yang berisik. jadi selain merusak lingkungan ini tak ramah untuk pengendara lain karena bunyinya yang brisik. maka dari itu gas lebih banyak digunakan dibandingkan disel
+
+
+4. wheelbase ini sangat berhubungan juga dalam pemilihan mobil. bisa dilihat nilai minimumnya berada di angka 86.60, dan angka tertinggi berada di 120.90 serta rata-rata berada di 98.76.
+wheel base ini adalah  jarak antara pusat roda depan dengan pusat roda belakang.
+untuk mencapai keseimbangan
+
+5. total terbanyak dipegang oleh four cylinder number. untuk four cylinder number Aturan 1-2-4-3. Contoh kendaraan: beberapa British Ford and Riley engines, Ford Kent engine, Riley Nine.
+dan total sedikit nya ada di three dan twelve cylinder number. three cylinder number  Contoh kendaraan yang menggunakan aturan pengapian seperti ini adalah Saab two-stroke, Perodua Kancil engine Saab two-stroke, Perodua Kancil engine untuk aturan pengapian pertama. dan untuk twelve cylinder number ini rata-rata sudah mobil berkelas dan harganya pun mahal maka mungkin jarang minat untuk mencapai ke twelve cylindernumber. 
+
+6. carwidth di mobil ini sendiri tak beda jauh ukuran terendah ada di 60.30 dan ukuran tertinggi ada di 72.30. carwidth ini adalah lebar dari mobil. semakin besar ukuran carwidth akan semakin lebar juga ukuran mobilnya.
+
+7. curbweight dari mobil terendahnya adalah 1488 dan untuk berat tertinggi ada di 4066. curbweight ini berat mobil tanpa orang ataupun bahan bakar. jadi pure berat dari komposisi mobilnya saja.
+
+```
+
+```{r}
+library(Hmisc)
+describe(dataframe)
+```
+
+
+```
+_explanasi_
+
+1.  13  Variables(colomn)      205  Observations(baris)
+ 
+2.  untuk price harga lowest :  5118  5151  5195  5348  5389, highest: 36880 37028 40960 41315 45400
+ 
+3. untuk factor Symboling
+ 
+Value         -2    -1     0     1     2     3
+Frequency      3    22    67    54    32    27
+Proportion 0.015 0.107 0.327 0.263 0.156 0.132
+
+frekuensi paling banyak muncul 67 di symboling
+ 
+disini untuk melihat value apa saja yang ada di dataframe saya.
+
+4. horsepower
+lowest :  48  52  55  56  58, highest: 184 200 207 262 288
+
+5. CarBody 
+          
+                                                                      
+Value      convertible     hardtop   hatchback       sedan       wagon
+Frequency            6           8          70          96          25
+Proportion       0.029       0.039       0.341       0.468       0.122
+
+frekuensi muncul bnyak di mobil sedan 
+
+```
+
+```{r}
+#compute the mean of each column
+sapply(dataframe[, c(7:9, 11:13)], mean, na.rm=TRUE)
+```
+```
+disini saya menampilkan rata-rata berupa vactor dari ke-6 spek mobil.
+untuk rata-rata dari wheelbase diperoleh nilai  98.75659 ini merupakan jarak sumbu roda depan dan belakang.
+
+untuk rata-rata carwidth berupa vactor yaitu 65.90780. semakin besar ukuran carwidth akan semakin lebar juga ukuran mobilnya.
+
+untuk rata-rata CurbWeight berupa vactor yaitu 2555.56585. curbweight ini berat mobil tanpa orang ataupun bahan bakar. jadi pure berat dari komposisi mobilnya saja.
+
+untuk rata-rata HorsePower berupa vactor yaitu 104.11707. 
+
+untuk citympg rata-rata horse power berupa vector yaitu 25.21951. 
+
+terakhir rata-rata price berupa vector yaitu 13276.71057
+```
+
+```{r}
+# Compute quartiles
+sapply(dataframe[, c(7:9, 11:13)], quantile, na.rm=TRUE)
+```
+```
+
+_explanasi_
+
+jika dilihat dari tabel ini maka yang paling kecil adalah citympg. 
+
+makin besar price makin besar juga spek yang didapat.
+
+untuk nilai maximal dari price adalah   45400 
+```
+
+```{r}
+sapply(dataframe, class)
+```
+
+_penjelasan singkat_
+ini untuk melihat mana tipe data yang berupa numerik dan kategorical.
+
+
+```{r}
+BasicSummary <- function(df, dgts = 3){
+## #
+## ################################################################
+## #
+## # Create a basic summary of variables in the data frame df,
+## # a data frame with one row for each column of df giving the
+## # variable name, type, number of unique levels, the most
+## # frequent level, its frequency and corresponding fraction of
+## # records, the number of missing values and its corresponding
+## # fraction of records
+## #
+## ################################################################
+## #
+m <- ncol(df)
+varNames <- colnames(df)
+varType <- vector("character",m)
+topLevel <- vector("character",m)
+topCount <- vector("numeric",m)
+missCount <- vector("numeric",m)
+levels <- vector("numeric", m)
+
+for (i in 1:m){
+x <- df[,i]
+varType[i] <- class(x)
+xtab <- table(x, useNA = "ifany")
+levels[i] <- length(xtab)
+nums <- as.numeric(xtab)
+maxnum <- max(nums)
+topCount[i] <- maxnum
+maxIndex <- which.max(nums)
+lvls <- names(xtab)
+topLevel[i] <- lvls[maxIndex]
+missIndex <- which((is.na(x)) | (x == "") | (x == " "))
+missCount[i] <- length(missIndex)
+}
+n <- nrow(df)
+topFrac <- round(topCount/n, digits = dgts)
+missFrac <- round(missCount/n, digits = dgts)
+## #
+summaryFrame <- data.frame(variable = varNames, type = varType,
+ levels = levels, topLevel = topLevel,
+ topCount = topCount, topFrac = topFrac,
+ missFreq = missCount, missFrac = missFrac)
+ return(summaryFrame)
+ }
+
+BasicSummary(dataframe)
+```
+
+
+
+
+```{r}
+pairs( ~CarID + Symboling + WheelBase + CarWidth + CurbWeight + HorsePower+ Citympg + Price , data = dataframe, main = "Sclatter Plot")
+```
+```
+
+_explanasi_
+
+bisa dilihat dalam grafik sclater plot ini, ini merupakan relasi antar variabel. 
+
+contoh bisa dilihat di bagian citympg dan price ini merupakan negatif linear. dengan y adalah pricenya dan x merupakan citympgnya. tetapi tetap dapat menyebar secara merata
+
+lalu berikutnya, ada hubungan positif linear dengan carwidth dan curbweight yang artinya strong dan menyebar secara merata.
+
+
+untuk sisanya, sclatterplotnya kurang bagus atau tidak berkolerasi.
+
+```
+a.	Interpret the result of your model.
+
+```{r}
+dataframe <- dataframe[, c(1,2, 7:9, 11:13)]
+fit1=lm(Price~.,data=dataframe)
+summary(fit1)
+plot(fit1, which = 1)
+```
+```
+_explanasi_
+
+korelasi yang kuat ada di HorsePower, CurbWeight, CarID. namun jika dilihat dari f-statistic angka 118.4 bukan merupakan angka yang tinggi. jadi untuk ini saya masih mencari lagi agar model yang kita dapatkan bagus.
+```
+
+
+
+```{r}
+fit2 <- lm(Price~ HorsePower + CurbWeight, data= dataframe)
+summary(fit2)
+plot(fit2, which=1)
+```
+_explanasi:_
+
+untuk fit2 ini saya mencoba mengambil variabel yang memiliki korelasi tinggi. untuk f-statistic nya sendiri sudah lebih tinggi dibandingkan sebelumnya yaitu mencapai angka 343.6. tetapi saya ingin mencoba menggali lebih dalam di fit 3
+
+```{r}
+fit3 <- lm(log(Price)~ HorsePower + CurbWeight, data= dataframe)
+summary(fit3)
+plot(fit3, which=1)
+```
+
+```
+__Write your explanation here:__
+
+untuk fit 3 disini menurut saya model yang saya dapatkan sudah cukup bagus ini dapat dilihat dari f-statistic yang mencapai angka 575.1
+
+jadi semakin tinggi nilai f-statistic semakin bagus model kita. maka dari itu, kita akan fokuskan ke horsepower dan curbweight nya.
+
+```
+
+b.	Write down the equation of the best fitting line.
+
+
+
+```{r}
+
+library(ggplot2)
+ggplot(data=dataframe, aes(x=Price, y=HorsePower)) + geom_smooth(method="lm") +geom_point()
+```
+__explanasi:__
+
+jika kita melihat dari grafik tersebut, dapat dilihat bahwa hubungan price dan horsepower berkolerasi. karena garis abline yang linear. jadi semakin tinggi horsepower semakin mahal harganya.
+
+
+
+
+```{r}
+summary(fit3)
+```
+
+__Write your explanation here:__
+untuk mengetahui price menggunakan rumus ini 
+price = 7.341 + 4.576 * (HorsePower) + 6.014 * (CurbWeight)
+
+
+persamaan garis yang paling pas adalah HorsePower dan CurbWeight, memang di awal korelasi ini sudah kuat ditambah disatukan juga jadi memiliki korelasi yang sangat kuat. 
+untuk nilainya sendiri saya kita pakai yang Adjusted R-squared:  0.8491 karena merupakan multi reggresion.
+
+
+c.	Is your model good? Why or why not?
+```{r}
+library(caret)
+set.seed(1)
+validation_index = createDataPartition(dataframe$Price, p=0.8, list = FALSE)
+validationset = dataframe[-validation_index,]
+trainingset = dataframe[validation_index,]
+```
+```{r}
+prediction <- predict(fit3, validationset)
+mse <- mean((validationset$Price - prediction)^2)
+```
+
+```{r}
+validationset$predicted <- predict(fit3, validationset)
+actual_prediction <- data.frame(validationset$Price, validationset$predicted, validationset$Price - validationset$predicted)
+names(actual_prediction) <- c ("Price", "Predicted", "residuals")
+correlation_accuracy <- cor(actual_prediction)
+correlation_accuracy
+```
+
+
+__explanasi:__
+training setnya 80%
+validation setnya 20%
+
+untuk model ini mendapat akurasi sebesar 88% dilihat dari price dan predictednya
+
+menurut saya model ini cukup bagus karena dengan training set 80% dan validation setnya 20% mendapatkan akurasi sebesar 88% jadi layak digunakan.
+
+
+```{r}
+hist(rstudent(fit3))
+```
+
+
+
+__Write your explanation here:__
+
+untuk histogram dari fit3 ini juga layak digunakan karena histogramnya berbentuk lonceng jadi bisa disimpulkan residualnya sudah terdistribusi normal. 
+
+
+d.	Based on your answer in c, will you deploy the model? Why or why not?
+
+
+
+```{r}
+plot(exp(prediction), validationset$Price, xlab="predicted Price", ylab="Actual Price", main = "Prediction")
+abline(a=0, b=1)
+```
+
+__Write your explanation here:__
+
+jika dilihat dari grafik tersebut dapat disimpulkan bahwa harga prediksi dengan harga sebenarnya tidak beda jauh.
+
+ini dapat dibuktikan atau dilihat secara langsung dari abline(garis) yang telah ada dan dihubungkan dengan titik-titik yang ada. garis dan titik tersebut menunjukan angka yang tak jauh berbeda dari prediksi dengan harga sebenarnya.
+
+
+bisa simpulkan juga, bahwa model yang telah saya buat ini bagus karena akurasi model saya sebesar 88% dan histogram juga berbentuk lonceng yang artinya residualnya sudah terdistribusi dengan baik/ menyebar secara meraata.
+
+
+
+
